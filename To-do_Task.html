@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo-list</title>
+   
+
+    <!-- Font Awesome -->
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/8.0.0/mdb.min.css"
+    rel="stylesheet"
+    />
+</head>
+
+
+
+
+
+
+<body>
+<!-- Login Form -->
+<div id="login-section" class="container p-4 border rounded">
+    <h2 class="text-center text-muted mb-4">Login</h2>
+    
+    <form id="login-form">
+        <input id="username" type="text" placeholder="Username" class="form-control" required><br>
+        <input id="password" type="password" placeholder="Password" class="form-control" required><br>
+        <button type="submit" class="btn btn-primary">Login</button><br><br>
+        <h5 style="text-muted;">By NIDHIN THOMAS</h5>
+    </form>
+    <small style="float: right;" >username: user</small><br>
+    <small style="float: right;">password: password</small><br>
+    <div id="login-error" class="text-danger mt-3" style="display: none;">Invalid username or password.</div>
+</div>
+
+
+
+
+
+
+
+<div id="todo-section" class="container p-4 border rounded" style="display: none;">
+    <h2 class="text-center text-muted mb-4">Todo-List</h2>
+    <div class="col-12 col-md-4 col-lg-4">
+        <div>
+            <form id="todo-form">
+                <input id="title-input" placeholder="Enter Todo" class="form-control" required><br>
+                <input id="date_input" type="date" class="form-control"><br>
+                <input id="time_input" type="time" class="form-control"><br>
+                <div>
+                <button style="submit" class='btn btn-primary text-nowrap'>ADD Todo</button><br><br>
+                </div>
+            </form>
+         </div>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <h4>Pending Tasks</h4>
+            <div class="border rounded p-3" id="pending_todo_list"></div>
+        </div>
+        <div class="col-12 col-md-6">
+            <h4>Completed Tasks</h4>
+            <div class="border rounded p-3" id="completed_todo_list"></div>
+        </div>
+    </div><br><br>
+    <h6 style="text-muted; float:right;">By NIDHIN THOMAS</h6>
+</div>
+
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/8.0.0/mdb.umd.min.js"></script>
+
+
+
+
+
+<script>
+    var count = 1;
+
+   
+    const validUsername = "user";
+    const validPassword = "password";
+
+  
+    $("#login-form").submit(function() {
+        const username = $("#username").val();
+        const password = $("#password").val();
+
+       
+        if (username === validUsername && password === validPassword) {
+            
+            $("#login-section").hide();
+            $("#todo-section").show();
+        } else {
+            $("#login-error").show();  
+        }
+        return false;
+    });
+
+  
+    function add_todo(title, date_time) {
+        $("#pending_todo_list").append(`
+            <div id="todo_${count}" class="todo-item my-2 p-3 bg-light border">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <input type="checkbox" onchange="mark_complete('${count}')" style="margin-right: 10px;">
+                        <span id="todo_title_${count}">${title}</span>
+                        <small class="text-muted d-block" id="todo_datetime_${count}">${date_time}</small>
+                    </div>
+                    <div>
+                        <i class="fas fa-edit text-warning" style="cursor: pointer;" onclick="edit_todo('${count}')"></i>
+                        <i class="fas fa-trash text-danger ms-2" style="cursor: pointer;" onclick="delete_todo('${count}')"></i>
+                    </div>
+                </div>
+            </div>
+        `);
+        count++;
+    }
+
+    
+
+
+
+
+
+    function delete_todo(id) {
+        $("#todo_" + id).remove();
+    }
+
+  
+
+
+
+
+
+    function mark_complete(id) {
+        const task = $("#todo_" + id);
+        const title = $("#todo_title_" + id).text();
+        const date_time = $("#todo_datetime_" + id).text();
+        task.remove();
+        $("#completed_todo_list").append(`
+            <div id="completed_todo_${id}" class="todo-item my-2 p-3 bg-light border">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <input type="checkbox" checked disabled style="margin-right: 10px;">
+                        <span>${title}</span>
+                        <small class="text-muted d-block">${date_time}</small>
+                    </div>
+                    <i class="fas fa-trash text-danger ms-2" style="cursor: pointer;" onclick="delete_todo('completed_todo_${id}')"></i>
+                </div>
+            </div>
+        `);
+    }
+
+    
+
+
+
+
+
+    function edit_todo(id) {
+        const title = $("#todo_title_" + id).text();
+        const date_time = $("#todo_datetime_" + id).text().split(" ");
+        const date = date_time[0];
+        const time = date_time[1];
+        
+      
+        $("#title-input").val(title);
+        $("#date_input").val(date);
+        $("#time_input").val(time);
+
+        
+        delete_todo(id);
+    }
+
+
+    $("#todo-form").submit(function() {
+        const title = $("#title-input").val();
+        const date = $("#date_input").val();
+        const time = $("#time_input").val();
+        const date_time = date + " " + time;
+
+        if (title) {
+            add_todo(title, date_time);
+            this.reset();
+        }
+        return false;
+    });
+
+
+
+
+
+</script>
+</body>
+</html>
